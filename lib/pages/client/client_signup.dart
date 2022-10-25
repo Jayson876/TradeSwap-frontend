@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:email_validator/email_validator.dart';
 
-class TradesmanSignup extends StatefulWidget {
-  const TradesmanSignup({super.key});
+class ClientSignup extends StatefulWidget {
+  const ClientSignup({super.key});
 
   @override
-  State<TradesmanSignup> createState() => _TradesmanSignupState();
+  State<ClientSignup> createState() => _ClientSignupState();
 }
 
-class _TradesmanSignupState extends State<TradesmanSignup> {
+class _ClientSignupState extends State<ClientSignup> {
   int currentStep = 0;
   final formKey = GlobalKey<FormState>();
 
@@ -18,28 +18,10 @@ class _TradesmanSignupState extends State<TradesmanSignup> {
   final password = TextEditingController();
   final confirmPass = TextEditingController();
   final cellNum = TextEditingController();
-  final profilePic = TextEditingController();
-  final bio = TextEditingController();
-  final idUpload = TextEditingController();
-  final hrlyRate = TextEditingController();
-
-  String? skillOpts = 'Select a Skill';
-
-  List<String> tradeSkills = [
-    'Select a Skill',
-    'Skill 1',
-    'Skill 2',
-    'Skill 3',
-    'Skill 4',
-    'Skill 5',
-    'Skill 6',
-    'Skill 7',
-    'Skill 8',
-    'Skill 9',
-    'Skill 10',
-  ];
-
-  bool? checkBoxValue = true;
+  // final profilePic = TextEditingController();
+  // final bio = TextEditingController();
+  // final idUpload = TextEditingController();
+  // final hrlyRate = TextEditingController();
 
   String? parishOpts = 'parish 1';
 
@@ -99,26 +81,38 @@ class _TradesmanSignupState extends State<TradesmanSignup> {
             child: Stepper(
               steps: getSteps(),
               currentStep: currentStep,
+
+              //STEP TAP FUNCTION
               onStepTapped: (step) {
                 formKey.currentState!.validate();
-                setState(() {
-                  currentStep = step;
-                });
+
+                if (formKey.currentState!.validate() == false) {
+                  setState(() {
+                    currentStep = currentStep;
+                  });
+                } else {
+                  setState(() {
+                    currentStep = step;
+                  });
+                }
               },
 
               //NEXT STEP FUNCTION
               onStepContinue: () {
                 final isLastStep = currentStep == getSteps().length - 1;
-                formKey.currentState!.validate();
                 bool isDetailValid = isDetailComplete();
 
-                if (isDetailValid) {}
-
-                if (isLastStep) {
+                if (formKey.currentState!.validate() == false) {
+                  setState(() {
+                    currentStep = currentStep;
+                  });
+                } else if (isLastStep) {
                   print("Form Submitted!");
                 } else {
                   setState(() => currentStep += 1);
                 }
+
+                // if (isDetailValid) {}
               },
 
               //STEP BACK FUCTION
@@ -166,7 +160,6 @@ class _TradesmanSignupState extends State<TradesmanSignup> {
                                     const EdgeInsets.symmetric(vertical: 20),
                                 // backgroundColor: Color.fromARGB(255, 255, 214, 10),
                                 backgroundColor: Colors.transparent,
-
                                 shape: const RoundedRectangleBorder(
                                     borderRadius:
                                         BorderRadius.all(Radius.circular(5))),
@@ -336,142 +329,8 @@ class _TradesmanSignupState extends State<TradesmanSignup> {
 
         //FORM STEP 2
         Step(
-          state: currentStep > 1 ? StepState.complete : StepState.indexed,
-          isActive: currentStep >= 1,
-          title: const Text("Profile"),
-          content: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              //PROFILE PICTURE FIELD
-              Padding(
-                padding: const EdgeInsets.only(bottom: 10.0, right: 10.0),
-                child: TextFormField(
-                  keyboardType: TextInputType.url,
-                  decoration: const InputDecoration(labelText: 'Profile Photo'),
-                  controller: profilePic,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Upload a photo of yourself.';
-                    } else {
-                      return null;
-                    }
-                  },
-                ),
-              ),
-
-              // //CIRCLE PROFILE PHOTO
-              // CircleAvatar(
-              //   radius: 80.0,
-              //   backgroundColor: Color.fromARGB(255, 255, 214, 10),
-              // ),
-
-              //ABOUT TRADESMAN
-              const Padding(
-                padding: EdgeInsets.only(top: 10.0, bottom: 8.0),
-                child: Text("Tell us about yourself"),
-              ),
-
-              //ABOUT TRADESMAN TEXT AREA
-              Padding(
-                padding: const EdgeInsets.only(bottom: 10.0, right: 10.0),
-                child: TextFormField(
-                  // minLines: 1,
-                  maxLines: 3,
-                  decoration: const InputDecoration(
-                    // labelText: 'Tell us about yourself',
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(5))),
-                  ),
-                  controller: bio,
-                ),
-              ),
-            ],
-          ),
-        ),
-
-        //FORM STEP 3
-        Step(
           state: currentStep > 2 ? StepState.complete : StepState.indexed,
           isActive: currentStep >= 2,
-          title: const Text("Skills"),
-          content: Column(children: [
-            //SKILL SELECTION DROPDOWN
-            Padding(
-              padding: const EdgeInsets.only(right: 10.0, bottom: 10.0),
-              child: DropdownButton(
-                isExpanded: true,
-                onChanged: (value) {
-                  skillOpts = value;
-                  setState(() {});
-                },
-                value: skillOpts,
-                items: tradeSkills.map((skill) {
-                  return DropdownMenuItem(value: skill, child: Text(skill));
-                }).toList(),
-              ),
-            ),
-
-            //HOURLY RATE AND NEGOTIABLE OPTION CHECKBOX ROW
-            Padding(
-              padding: const EdgeInsets.only(right: 10.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  //RATE FORM FIELD
-                  Expanded(
-                      child: Padding(
-                    padding: const EdgeInsets.only(right: 10.0),
-                    child: TextFormField(
-                      keyboardType: TextInputType.number,
-                      decoration: const InputDecoration(labelText: 'Rate'),
-                      controller: hrlyRate,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Enter your hourly rate.';
-                        }
-                        return null;
-                      },
-                    ),
-                  )),
-
-                  //CHECKBOX AND LABEL ROW
-                  Row(
-                    children: <Widget>[
-                      //CHECKBOX
-                      Checkbox(
-                          shape: const RoundedRectangleBorder(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(3))),
-                          value: checkBoxValue,
-                          activeColor: const Color(0xFF040F44),
-                          checkColor: Colors.white,
-                          onChanged: (bool? value) {
-                            setState(() {
-                              checkBoxValue = value;
-                            });
-                          }),
-
-                      //LABEL
-                      const Text(
-                        'Neg.?',
-                        style: TextStyle(
-                          color: Color(0xFF040F44),
-                          fontWeight: FontWeight.w600,
-                          fontSize: 14,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ]),
-        ),
-
-        //FORM STEP 4
-        Step(
-          state: currentStep > 3 ? StepState.complete : StepState.indexed,
-          isActive: currentStep >= 3,
           title: const Text("Location"),
           content: Padding(
             padding: const EdgeInsets.only(right: 10.0, bottom: 10.0),
@@ -486,49 +345,6 @@ class _TradesmanSignupState extends State<TradesmanSignup> {
                 return DropdownMenuItem(value: parish, child: Text(parish));
               }).toList(),
             ),
-          ),
-        ),
-
-        //FORM STEP 5
-        Step(
-          isActive: currentStep >= 4,
-          title: const Text("Verification"),
-          content: Column(
-            children: [
-              //ID UPLOAD FIELD
-              Padding(
-                padding: const EdgeInsets.only(bottom: 10.0, right: 10.0),
-                child: TextFormField(
-                  keyboardType: TextInputType.url,
-                  decoration: const InputDecoration(labelText: 'ID Upload'),
-                  controller: idUpload,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Upload an image of your ID.';
-                    } else {
-                      return null;
-                    }
-                  },
-                ),
-              ),
-
-              //SELFIE UPLOAD FIELD
-              Padding(
-                padding: const EdgeInsets.only(bottom: 10.0, right: 10.0),
-                child: TextFormField(
-                  keyboardType: TextInputType.url,
-                  decoration: const InputDecoration(labelText: 'Selfie Upload'),
-                  controller: idUpload,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Upload an image of yourself.';
-                    } else {
-                      return null;
-                    }
-                  },
-                ),
-              ),
-            ],
           ),
         ),
       ];

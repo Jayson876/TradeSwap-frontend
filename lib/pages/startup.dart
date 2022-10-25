@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import './signup.dart';
 
 class LandingScreen extends StatefulWidget {
   const LandingScreen({super.key});
@@ -102,8 +103,14 @@ class _LandingScreenState extends State<LandingScreen> {
         // crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+            //LOGIN BUTTON
             TextButton(
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const SignUpScreen()));
+                },
                 style: TextButton.styleFrom(
                   padding:
                       const EdgeInsets.symmetric(vertical: 35, horizontal: 60),
@@ -119,8 +126,15 @@ class _LandingScreenState extends State<LandingScreen> {
                       fontSize: 18,
                       fontWeight: FontWeight.w600),
                 )),
+
+            //SIGNUP BUTTON
             TextButton(
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const SignUpScreen()));
+                },
                 style: TextButton.styleFrom(
                   padding:
                       const EdgeInsets.symmetric(vertical: 35, horizontal: 60),
