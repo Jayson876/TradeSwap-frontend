@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:tradeswap_front/pages/home/homepage.dart';
+import 'package:tradeswap_front/pages/searchresults/searchresults.dart';
 import 'pages/startup.dart';
 
 
