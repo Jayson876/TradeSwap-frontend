@@ -39,6 +39,7 @@ dependencies:
   equatable: ^2.0.3
   google_fonts: ^2.1.0
   email_validator: ^2.1.16
+  http: ^0.13.5
 
 
 dev_dependencies:
