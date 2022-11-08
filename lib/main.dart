@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'pages/startup.dart';
+import 'pages/client/client_signup.dart';
+import 'pages/tradesman/tradesman_signup.dart';
+import 'pages/signup.dart';
 
 
 void main() {
@@ -9,11 +12,11 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
+  // This widget is the root of your application.
   @override
-  Widget build(BuildContext context) 
+  Widget build(BuildContext context) {
     return const MaterialApp(
         debugShowCheckedModeBanner: false, home: LandingScreen()
     );
-    return const MaterialApp(home: LandingScreen());
   }
 }
