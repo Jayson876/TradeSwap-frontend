@@ -141,7 +141,7 @@ class _TradesmanSignupState extends State<TradesmanSignup> {
                               elevation: 4,
                               padding: const EdgeInsets.symmetric(vertical: 20),
                               backgroundColor:
-                                  Color.fromARGB(255, 255, 214, 10),
+                                  const Color.fromARGB(255, 255, 214, 10),
                               shape: const RoundedRectangleBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(5))),
@@ -171,7 +171,7 @@ class _TradesmanSignupState extends State<TradesmanSignup> {
                                     borderRadius:
                                         BorderRadius.all(Radius.circular(5))),
                               ),
-                              child: Text('Back')),
+                              child: const Text('Back')),
                         ),
                     ],
                   ),
