@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:email_validator/email_validator.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class TradesmanSignup extends StatefulWidget {
   const TradesmanSignup({super.key});
@@ -59,6 +61,46 @@ class _TradesmanSignupState extends State<TradesmanSignup> {
     'parish 13',
     'parish 14',
   ];
+
+  List<dynamic> _Parishes = [];
+  String? parishString = '';
+  bool isParishSelected = false;
+  String parishSelect = '63556f9ddf6e9c413ef6bf5d';
+
+  List<dynamic> _Category = [];
+  String? categoryString = '';
+  String categorySelect = '63557069df6e9c413ef6bf79';
+
+  Future getParishes() async {
+    var resp = await http
+        .get(Uri.parse('https://tradeswap-server.vercel.app/api/v1/parish'));
+    if (resp.statusCode == 200) {
+      var jsonData = jsonDecode(resp.body)['data'];
+      print(jsonData);
+      setState(() {
+        _Parishes = jsonData as List<dynamic>;
+      });
+    }
+  }
+
+  Future getCategories() async {
+    var resp = await http
+        .get(Uri.parse('https://tradeswap-server.vercel.app/api/v1/category'));
+    if (resp.statusCode == 200) {
+      var jsonData = jsonDecode(resp.body)['data'];
+      print(jsonData);
+      setState(() {
+        _Category = jsonData as List<dynamic>;
+      });
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getParishes();
+    getCategories();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -401,12 +443,21 @@ class _TradesmanSignupState extends State<TradesmanSignup> {
               child: DropdownButton(
                 isExpanded: true,
                 onChanged: (value) {
-                  skillOpts = value;
+                  // skillOpts = value;
                   setState(() {});
                 },
-                value: skillOpts,
-                items: tradeSkills.map((skill) {
-                  return DropdownMenuItem(value: skill, child: Text(skill));
+                value: _Category[0]['_id'],
+                items: _Category.map((skill) {
+                  var catDecoded = skill as Map<String, dynamic>;
+                  return DropdownMenuItem(
+                      value: catDecoded['_id'],
+                      child: Text(catDecoded['category_name']),
+                      onTap: () {
+                        setState(() {
+                          categorySelect = catDecoded['category_name'];
+                          print(categorySelect);
+                        });
+                      });
                 }).toList(),
               ),
             ),
@@ -475,15 +526,26 @@ class _TradesmanSignupState extends State<TradesmanSignup> {
           title: const Text("Location"),
           content: Padding(
             padding: const EdgeInsets.only(right: 10.0, bottom: 10.0),
-            child: DropdownButton(
+            child: DropdownButton<String>(
+              hint: Text('Select a parish'),
               isExpanded: true,
               onChanged: (value) {
-                parishOpts = value;
+                // _Parishes = value;
                 setState(() {});
               },
-              value: parishOpts,
-              items: parishes.map((parish) {
-                return DropdownMenuItem(value: parish, child: Text(parish));
+              value: _Parishes[0]['_id'],
+              items: _Parishes.map((par) {
+                var parDecoded = par as Map<String, dynamic>;
+                return DropdownMenuItem<String>(
+                  value: parDecoded['_id'] as String,
+                  child: Text(parDecoded['parish_name']),
+                  onTap: () {
+                    setState(() {
+                      parishSelect = parDecoded['parish_name'];
+                      print(parishSelect);
+                    });
+                  },
+                );
               }).toList(),
             ),
           ),
