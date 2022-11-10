@@ -3,7 +3,7 @@ import 'package:tradeswap_front/models/parish_model.dart';
 import 'dart:convert';
 
 class ParishService {
-  static final String API_URL = 'https://tradeswap-server.vercel.app/api/v1/parish';
+  static final String API_URL = 'https://trade-swap-backend.vercel.app/api/v1/category';
 
   static Future<Parish> fetchParishes() async {
   final response = await http
