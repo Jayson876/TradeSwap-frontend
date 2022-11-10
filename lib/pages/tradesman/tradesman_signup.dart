@@ -73,7 +73,7 @@ class _TradesmanSignupState extends State<TradesmanSignup> {
 
   Future getParishes() async {
     var resp = await http
-        .get(Uri.parse('https://tradeswap-server.vercel.app/api/v1/parish'));
+        .get(Uri.parse('https://trade-swap-backend.vercel.app/api/v1/parish'));
     if (resp.statusCode == 200) {
       var jsonData = jsonDecode(resp.body)['data'];
       print(jsonData);
@@ -85,7 +85,7 @@ class _TradesmanSignupState extends State<TradesmanSignup> {
 
   Future getCategories() async {
     var resp = await http
-        .get(Uri.parse('https://tradeswap-server.vercel.app/api/v1/category'));
+        .get(Uri.parse('https://trade-swap-backend.vercel.app/api/v1/category'));
     if (resp.statusCode == 200) {
       var jsonData = jsonDecode(resp.body)['data'];
       print(jsonData);
