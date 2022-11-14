@@ -45,9 +45,7 @@ class _TradesmanSignupState extends State<TradesmanSignup> {
   ];
 
   bool? checkBoxValue = true;
-
   String? parishOpts = 'parish 1';
-
   List<String> parishes = [
     'parish 1',
     'parish 2',
@@ -82,8 +80,6 @@ class _TradesmanSignupState extends State<TradesmanSignup> {
     if (resp.statusCode == 200) {
       var jsonData = jsonDecode(resp.body)['data'];
       List parList = jsonData;
-      print(parList);
-
       return parList.map((ele) {
         return Parish.fromJson(ele);
       }).toList();
@@ -98,8 +94,6 @@ class _TradesmanSignupState extends State<TradesmanSignup> {
     if (resp.statusCode == 200) {
       var jsonData = jsonDecode(resp.body)['data'];
       List categoryList = jsonData;
-
-      print(jsonData);
       return categoryList.map((ele) {
         return Category.fromJson(ele);
       }).toList();
@@ -453,7 +447,6 @@ class _TradesmanSignupState extends State<TradesmanSignup> {
                 future: catList,
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
-                    print(snapshot.data);
                     return Column(children: [
                       //SKILL SELECTION DROPDOWN
                       Padding(
@@ -539,7 +532,7 @@ class _TradesmanSignupState extends State<TradesmanSignup> {
                   } else if (snapshot.hasError) {
                     return Center(child: Text("${snapshot.hasError}"));
                   } else {
-                    return Center(
+                    return const Center(
                       child: CircularProgressIndicator(),
                     );
                   }
@@ -554,18 +547,16 @@ class _TradesmanSignupState extends State<TradesmanSignup> {
                 future: parishList,
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
-                    print(snapshot.data);
                     return Padding(
                       padding: const EdgeInsets.only(right: 10.0, bottom: 10.0),
                       child: DropdownButton<String>(
-                        hint: Text('Select a parish'),
+                        hint: const Text('Select a parish'),
                         isExpanded: true,
                         onChanged: (value) {
                           setState(() {});
                         },
                         value: snapshot.data![0].id.toString(),
                         items: snapshot.data!.map((par) {
-                          // var parDecoded = par as Map<String, dynamic>;
                           return DropdownMenuItem<String>(
                             value: par.id,
                             child: Text(par.parish_name),
@@ -585,12 +576,11 @@ class _TradesmanSignupState extends State<TradesmanSignup> {
                       child: Text("${snapshot.error}"),
                     );
                   } else {
-                    return Center(
+                    return const Center(
                       child: CircularProgressIndicator(),
                     );
                   }
                 }
-                // }
                 )),
 
         //FORM STEP 5

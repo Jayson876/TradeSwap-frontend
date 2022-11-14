@@ -33,7 +33,6 @@ class ParishService {
     final response = await http.get(Uri.parse(API_URL),
     );   
     if (response.statusCode == 200) {
-      print(response.body);
       return formatParishAsList(response.body);
     } else {
       throw Exception('Unable to fetch parishes from the server');
