@@ -12,6 +12,7 @@ class TradesmanSignup extends StatefulWidget {
 
 class _TradesmanSignupState extends State<TradesmanSignup> {
   int currentStep = 0;
+  bool isCompleted = false;
   final formKey = GlobalKey<FormState>();
 
   final firstName = TextEditingController();
@@ -79,13 +80,14 @@ class _TradesmanSignupState extends State<TradesmanSignup> {
       print(jsonData);
       setState(() {
         _Parishes = jsonData as List<dynamic>;
+        // print(_Parishes);
       });
     }
   }
 
   Future getCategories() async {
-    var resp = await http
-        .get(Uri.parse('https://trade-swap-backend.vercel.app/api/v1/category'));
+    var resp = await http.get(
+        Uri.parse('https://trade-swap-backend.vercel.app/api/v1/category'));
     if (resp.statusCode == 200) {
       var jsonData = jsonDecode(resp.body)['data'];
       print(jsonData);
@@ -154,10 +156,13 @@ class _TradesmanSignupState extends State<TradesmanSignup> {
                 formKey.currentState!.validate();
                 bool isDetailValid = isDetailComplete();
 
-                if (isDetailValid) {}
-
+                if (!isDetailValid) {}
                 if (isLastStep) {
-                  print("Form Submitted!");
+                  setState(() {
+                    isCompleted = true;
+                    // print('${}');
+                    print('Submitted');
+                  });
                 } else {
                   setState(() => currentStep += 1);
                 }
@@ -227,7 +232,7 @@ class _TradesmanSignupState extends State<TradesmanSignup> {
   }
 
   bool isDetailComplete() {
-    if (currentStep == 0) {
+    if (currentStep >= 0) {
       if (firstName.text.isEmpty ||
           lastName.text.isEmpty ||
           email.text.isEmpty ||
@@ -440,7 +445,7 @@ class _TradesmanSignupState extends State<TradesmanSignup> {
             //SKILL SELECTION DROPDOWN
             Padding(
               padding: const EdgeInsets.only(right: 10.0, bottom: 10.0),
-              child: DropdownButton(
+              child: DropdownButtonFormField(
                 isExpanded: true,
                 onChanged: (value) {
                   // skillOpts = value;
@@ -526,7 +531,7 @@ class _TradesmanSignupState extends State<TradesmanSignup> {
           title: const Text("Location"),
           content: Padding(
             padding: const EdgeInsets.only(right: 10.0, bottom: 10.0),
-            child: DropdownButton<String>(
+            child: DropdownButtonFormField<String>(
               hint: Text('Select a parish'),
               isExpanded: true,
               onChanged: (value) {

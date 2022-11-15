@@ -15,14 +15,21 @@ class _LandingScreenState extends State<LandingScreen> {
       //BACKGROUND IMAGE
       Container(
         decoration: const BoxDecoration(
-          gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: <Color>[Colors.black38, Colors.black]),
           image: DecorationImage(
             image: AssetImage("assets/images/startup.png"),
-            opacity: 0.5,
+            // opacity: 0.1,
             fit: BoxFit.cover,
+          ),
+        ),
+        child: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: <Color>[
+                  Color.fromARGB(0, 0, 0, 0),
+                  Color.fromARGB(149, 0, 0, 0)
+                ]),
           ),
         ),
       ),
@@ -104,52 +111,63 @@ class _LandingScreenState extends State<LandingScreen> {
         children: [
           Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
             //LOGIN BUTTON
-            TextButton(
-                onPressed: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const SignUpScreen()));
-                },
-                style: TextButton.styleFrom(
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 35, horizontal: 60),
-                  backgroundColor: Colors.transparent,
-                  shape: const RoundedRectangleBorder(
-                      borderRadius:
-                          BorderRadius.only(topRight: Radius.circular(30))),
-                ),
-                child: const Text(
-                  "Log In",
-                  style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.w600),
-                )),
+            Expanded(
+              child: TextButton(
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const SignUpScreen()));
+                  },
+                  style: TextButton.styleFrom(
+                    backgroundColor: Colors.transparent,
+                    shape: const RoundedRectangleBorder(
+                        borderRadius:
+                            BorderRadius.only(topRight: Radius.circular(30))),
+                  ),
+                  child: const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 25.0),
+                    child: Text(
+                      "Log In",
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 15,
+                          fontWeight: FontWeight.w600),
+                    ),
+                  )),
+            ),
+
+            //HORIZONTAL SPACER
+            const SizedBox(
+              width: 10.0,
+            ),
 
             //SIGNUP BUTTON
-            TextButton(
-                onPressed: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const SignUpScreen()));
-                },
-                style: TextButton.styleFrom(
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 35, horizontal: 60),
-                  backgroundColor: const Color(0xFFFFD600),
-                  shape: const RoundedRectangleBorder(
-                      borderRadius:
-                          BorderRadius.only(topLeft: Radius.circular(30))),
-                ),
-                child: const Text(
-                  "Sign Up",
-                  style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 18,
-                      fontWeight: FontWeight.w600),
-                ))
+            Expanded(
+              child: TextButton(
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const SignUpScreen()));
+                  },
+                  style: TextButton.styleFrom(
+                    backgroundColor: const Color(0xFFFFD600),
+                    shape: const RoundedRectangleBorder(
+                        borderRadius:
+                            BorderRadius.only(topLeft: Radius.circular(30))),
+                  ),
+                  child: const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 25.0),
+                    child: Text(
+                      "Sign Up",
+                      style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 15,
+                          fontWeight: FontWeight.w600),
+                    ),
+                  )),
+            )
           ]),
         ],
       )

@@ -334,7 +334,7 @@ class _ClientSignupState extends State<ClientSignup> {
           title: const Text("Location"),
           content: Padding(
             padding: const EdgeInsets.only(right: 10.0, bottom: 10.0),
-            child: DropdownButton(
+            child: DropdownButtonFormField(
               isExpanded: true,
               onChanged: (value) {
                 parishOpts = value;
