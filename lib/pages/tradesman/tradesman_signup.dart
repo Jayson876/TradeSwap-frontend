@@ -12,7 +12,6 @@ class TradesmanSignup extends StatefulWidget {
 
 class _TradesmanSignupState extends State<TradesmanSignup> {
   int currentStep = 0;
-  bool isCompleted = false;
   final formKey = GlobalKey<FormState>();
 
   final firstName = TextEditingController();
@@ -80,7 +79,6 @@ class _TradesmanSignupState extends State<TradesmanSignup> {
       print(jsonData);
       setState(() {
         _Parishes = jsonData as List<dynamic>;
-        // print(_Parishes);
       });
     }
   }
@@ -156,13 +154,10 @@ class _TradesmanSignupState extends State<TradesmanSignup> {
                 formKey.currentState!.validate();
                 bool isDetailValid = isDetailComplete();
 
-                if (!isDetailValid) {}
+                if (isDetailValid) {}
+
                 if (isLastStep) {
-                  setState(() {
-                    isCompleted = true;
-                    // print('${}');
-                    print('Submitted');
-                  });
+                  print("Form Submitted!");
                 } else {
                   setState(() => currentStep += 1);
                 }
@@ -232,7 +227,7 @@ class _TradesmanSignupState extends State<TradesmanSignup> {
   }
 
   bool isDetailComplete() {
-    if (currentStep >= 0) {
+    if (currentStep == 0) {
       if (firstName.text.isEmpty ||
           lastName.text.isEmpty ||
           email.text.isEmpty ||
@@ -445,7 +440,7 @@ class _TradesmanSignupState extends State<TradesmanSignup> {
             //SKILL SELECTION DROPDOWN
             Padding(
               padding: const EdgeInsets.only(right: 10.0, bottom: 10.0),
-              child: DropdownButtonFormField(
+              child: DropdownButton(
                 isExpanded: true,
                 onChanged: (value) {
                   // skillOpts = value;
@@ -531,7 +526,7 @@ class _TradesmanSignupState extends State<TradesmanSignup> {
           title: const Text("Location"),
           content: Padding(
             padding: const EdgeInsets.only(right: 10.0, bottom: 10.0),
-            child: DropdownButtonFormField<String>(
+            child: DropdownButton<String>(
               hint: Text('Select a parish'),
               isExpanded: true,
               onChanged: (value) {
