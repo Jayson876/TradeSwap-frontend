@@ -453,7 +453,7 @@ class _TradesmanSignupState extends State<TradesmanSignup> {
                       Padding(
                         padding:
                             const EdgeInsets.only(right: 10.0, bottom: 10.0),
-                        child: DropdownButton(
+                        child: DropdownButtonFormField(
                           isExpanded: true,
                           onChanged: (value) {
                             // skillOpts = value;
@@ -466,7 +466,7 @@ class _TradesmanSignupState extends State<TradesmanSignup> {
                                 child: Text(skill.category_name),
                                 onTap: () {
                                   setState(() {
-                                    categorySelect = skill.category_name;
+                                    categorySelect = skill.id;
                                     print(categorySelect);
                                   });
                                 });
@@ -550,7 +550,7 @@ class _TradesmanSignupState extends State<TradesmanSignup> {
                   if (snapshot.hasData) {
                     return Padding(
                       padding: const EdgeInsets.only(right: 10.0, bottom: 10.0),
-                      child: DropdownButton<String>(
+                      child: DropdownButtonFormField<String>(
                         hint: const Text('Select a parish'),
                         isExpanded: true,
                         onChanged: (value) {
@@ -563,7 +563,7 @@ class _TradesmanSignupState extends State<TradesmanSignup> {
                             child: Text(par.parish_name),
                             onTap: () {
                               setState(() {
-                                parishSelect = par.parish_name;
+                                parishSelect = par.id;
                                 print(parishSelect);
                               });
                             },
