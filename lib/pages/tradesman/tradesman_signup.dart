@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:http/http.dart' as http;
-import 'package:tradeswap_front/models/category_model.dart';
 import 'dart:convert';
-
-import 'package:tradeswap_front/models/parish_model.dart';
 
 class TradesmanSignup extends StatefulWidget {
   const TradesmanSignup({super.key});
@@ -45,7 +42,9 @@ class _TradesmanSignupState extends State<TradesmanSignup> {
   ];
 
   bool? checkBoxValue = true;
+
   String? parishOpts = 'parish 1';
+
   List<String> parishes = [
     'parish 1',
     'parish 2',
@@ -67,46 +66,40 @@ class _TradesmanSignupState extends State<TradesmanSignup> {
   String? parishString = '';
   bool isParishSelected = false;
   String parishSelect = '63556f9ddf6e9c413ef6bf5d';
-  late Future<List<Parish>> parishList;
 
   List<dynamic> _Category = [];
   String? categoryString = '';
   String categorySelect = '63557069df6e9c413ef6bf79';
-  late Future<List<Category>> catList;
 
-  Future<List<Parish>> getParishes() async {
+  Future getParishes() async {
     var resp = await http
         .get(Uri.parse('https://trade-swap-backend.vercel.app/api/v1/parish'));
     if (resp.statusCode == 200) {
       var jsonData = jsonDecode(resp.body)['data'];
-      List parList = jsonData;
-      return parList.map((ele) {
-        return Parish.fromJson(ele);
-      }).toList();
-    } else {
-      return [];
+      print(jsonData);
+      setState(() {
+        _Parishes = jsonData as List<dynamic>;
+      });
     }
   }
 
-  Future<List<Category>> getCategories() async {
+  Future getCategories() async {
     var resp = await http.get(
         Uri.parse('https://trade-swap-backend.vercel.app/api/v1/category'));
     if (resp.statusCode == 200) {
       var jsonData = jsonDecode(resp.body)['data'];
-      List categoryList = jsonData;
-      return categoryList.map((ele) {
-        return Category.fromJson(ele);
-      }).toList();
-    } else {
-      return [];
+      print(jsonData);
+      setState(() {
+        _Category = jsonData as List<dynamic>;
+      });
     }
   }
 
   @override
   void initState() {
     super.initState();
-    parishList = getParishes();
-    catList = getCategories();
+    getParishes();
+    getCategories();
   }
 
   @override
@@ -440,148 +433,123 @@ class _TradesmanSignupState extends State<TradesmanSignup> {
 
         //FORM STEP 3
         Step(
-            state: currentStep > 2 ? StepState.complete : StepState.indexed,
-            isActive: currentStep >= 2,
-            title: const Text("Skills"),
-            content: FutureBuilder<List<Category>>(
-                future: catList,
-                builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    return Column(children: [
-                      //SKILL SELECTION DROPDOWN
-                      Padding(
-                        padding:
-                            const EdgeInsets.only(right: 10.0, bottom: 10.0),
-                        child: DropdownButton(
-                          isExpanded: true,
-                          onChanged: (value) {
-                            // skillOpts = value;
-                            setState(() {});
-                          },
-                          value: snapshot.data![0].id.toString(),
-                          items: snapshot.data!.map((skill) {
-                            return DropdownMenuItem(
-                                value: skill.id,
-                                child: Text(skill.category_name),
-                                onTap: () {
-                                  setState(() {
-                                    categorySelect = skill.category_name;
-                                    print(categorySelect);
-                                  });
-                                });
-                          }).toList(),
+          state: currentStep > 2 ? StepState.complete : StepState.indexed,
+          isActive: currentStep >= 2,
+          title: const Text("Skills"),
+          content: Column(children: [
+            //SKILL SELECTION DROPDOWN
+            Padding(
+              padding: const EdgeInsets.only(right: 10.0, bottom: 10.0),
+              child: DropdownButton(
+                isExpanded: true,
+                onChanged: (value) {
+                  // skillOpts = value;
+                  setState(() {});
+                },
+                value: _Category[0]['_id'],
+                items: _Category.map((skill) {
+                  var catDecoded = skill as Map<String, dynamic>;
+                  return DropdownMenuItem(
+                      value: catDecoded['_id'],
+                      child: Text(catDecoded['category_name']),
+                      onTap: () {
+                        setState(() {
+                          categorySelect = catDecoded['category_name'];
+                          print(categorySelect);
+                        });
+                      });
+                }).toList(),
+              ),
+            ),
+
+            //HOURLY RATE AND NEGOTIABLE OPTION CHECKBOX ROW
+            Padding(
+              padding: const EdgeInsets.only(right: 10.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  //RATE FORM FIELD
+                  Expanded(
+                      child: Padding(
+                    padding: const EdgeInsets.only(right: 10.0),
+                    child: TextFormField(
+                      keyboardType: TextInputType.number,
+                      decoration: const InputDecoration(labelText: 'Rate'),
+                      controller: hrlyRate,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Enter your hourly rate.';
+                        }
+                        return null;
+                      },
+                    ),
+                  )),
+
+                  //CHECKBOX AND LABEL ROW
+                  Row(
+                    children: <Widget>[
+                      //CHECKBOX
+                      Checkbox(
+                          shape: const RoundedRectangleBorder(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(3))),
+                          value: checkBoxValue,
+                          activeColor: const Color(0xFF040F44),
+                          checkColor: Colors.white,
+                          onChanged: (bool? value) {
+                            setState(() {
+                              checkBoxValue = value;
+                            });
+                          }),
+
+                      //LABEL
+                      const Text(
+                        'Neg.?',
+                        style: TextStyle(
+                          color: Color(0xFF040F44),
+                          fontWeight: FontWeight.w600,
+                          fontSize: 14,
                         ),
                       ),
-
-                      //HOURLY RATE AND NEGOTIABLE OPTION CHECKBOX ROW
-                      Padding(
-                        padding: const EdgeInsets.only(right: 10.0),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            //RATE FORM FIELD
-                            Expanded(
-                                child: Padding(
-                              padding: const EdgeInsets.only(right: 10.0),
-                              child: TextFormField(
-                                keyboardType: TextInputType.number,
-                                decoration:
-                                    const InputDecoration(labelText: 'Rate'),
-                                controller: hrlyRate,
-                                validator: (value) {
-                                  if (value == null || value.isEmpty) {
-                                    return 'Enter your hourly rate.';
-                                  }
-                                  return null;
-                                },
-                              ),
-                            )),
-
-                            //CHECKBOX AND LABEL ROW
-                            Row(
-                              children: <Widget>[
-                                //CHECKBOX
-                                Checkbox(
-                                    shape: const RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(3))),
-                                    value: checkBoxValue,
-                                    activeColor: const Color(0xFF040F44),
-                                    checkColor: Colors.white,
-                                    onChanged: (bool? value) {
-                                      setState(() {
-                                        checkBoxValue = value;
-                                      });
-                                    }),
-
-                                //LABEL
-                                const Text(
-                                  'Neg.?',
-                                  style: TextStyle(
-                                    color: Color(0xFF040F44),
-                                    fontWeight: FontWeight.w600,
-                                    fontSize: 14,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                    ]);
-                  } else if (snapshot.hasError) {
-                    return Center(child: Text("${snapshot.hasError}"));
-                  } else {
-                    return const Center(
-                      child: CircularProgressIndicator(),
-                    );
-                  }
-                })),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ]),
+        ),
 
         //FORM STEP 4
         Step(
-            state: currentStep > 3 ? StepState.complete : StepState.indexed,
-            isActive: currentStep >= 3,
-            title: const Text("Location"),
-            content: FutureBuilder<List<Parish>>(
-                future: parishList,
-                builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    return Padding(
-                      padding: const EdgeInsets.only(right: 10.0, bottom: 10.0),
-                      child: DropdownButton<String>(
-                        hint: const Text('Select a parish'),
-                        isExpanded: true,
-                        onChanged: (value) {
-                          setState(() {});
-                        },
-                        value: snapshot.data![0].id.toString(),
-                        items: snapshot.data!.map((par) {
-                          return DropdownMenuItem<String>(
-                            value: par.id,
-                            child: Text(par.parish_name),
-                            onTap: () {
-                              setState(() {
-                                parishSelect = par.parish_name;
-                                print(parishSelect);
-                              });
-                            },
-                          );
-                        }).toList(),
-                      ),
-                    );
-                  } else if (snapshot.hasError) {
-                    print(snapshot.error);
-                    return Center(
-                      child: Text("${snapshot.error}"),
-                    );
-                  } else {
-                    return const Center(
-                      child: CircularProgressIndicator(),
-                    );
-                  }
-                }
-                )),
+          state: currentStep > 3 ? StepState.complete : StepState.indexed,
+          isActive: currentStep >= 3,
+          title: const Text("Location"),
+          content: Padding(
+            padding: const EdgeInsets.only(right: 10.0, bottom: 10.0),
+            child: DropdownButton<String>(
+              hint: Text('Select a parish'),
+              isExpanded: true,
+              onChanged: (value) {
+                // _Parishes = value;
+                setState(() {});
+              },
+              value: _Parishes[0]['_id'],
+              items: _Parishes.map((par) {
+                var parDecoded = par as Map<String, dynamic>;
+                return DropdownMenuItem<String>(
+                  value: parDecoded['_id'] as String,
+                  child: Text(parDecoded['parish_name']),
+                  onTap: () {
+                    setState(() {
+                      parishSelect = parDecoded['parish_name'];
+                      print(parishSelect);
+                    });
+                  },
+                );
+              }).toList(),
+            ),
+          ),
+        ),
 
         //FORM STEP 5
         Step(

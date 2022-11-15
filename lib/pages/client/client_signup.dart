@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:email_validator/email_validator.dart';
-import 'package:tradeswap_front/models/parish_model.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
 
 class ClientSignup extends StatefulWidget {
   const ClientSignup({super.key});
@@ -44,32 +41,6 @@ class _ClientSignupState extends State<ClientSignup> {
     'parish 13',
     'parish 14',
   ];
-
-  List<dynamic> _Parishes = [];
-  String? parishString = '';
-  bool isParishSelected = false;
-  String parishSelect = '63556f9ddf6e9c413ef6bf5d';
-  late Future<List<Parish>> parishList;
-
-  Future<List<Parish>> getParishes() async {
-    var resp = await http
-        .get(Uri.parse('https://trade-swap-backend.vercel.app/api/v1/parish'));
-    if (resp.statusCode == 200) {
-      var jsonData = jsonDecode(resp.body)['data'];
-      List parList = jsonData;
-      return parList.map((ele) {
-        return Parish.fromJson(ele);
-      }).toList();
-    } else {
-      return [];
-    }
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    parishList = getParishes();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -361,46 +332,20 @@ class _ClientSignupState extends State<ClientSignup> {
           state: currentStep > 2 ? StepState.complete : StepState.indexed,
           isActive: currentStep >= 2,
           title: const Text("Location"),
-          content:
-          FutureBuilder<List<Parish>>(
-                future: parishList,
-                builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    return Padding(
-                      padding: const EdgeInsets.only(right: 10.0, bottom: 10.0),
-                      child: DropdownButton<String>(
-                        hint: const Text('Select a parish'),
-                        isExpanded: true,
-                        onChanged: (value) {
-                          setState(() {});
-                        },
-                        value: snapshot.data![0].id.toString(),
-                        items: snapshot.data!.map((par) {
-                          return DropdownMenuItem<String>(
-                            value: par.id,
-                            child: Text(par.parish_name),
-                            onTap: () {
-                              setState(() {
-                                parishSelect = par.parish_name;
-                                print(parishSelect);
-                              });
-                            },
-                          );
-                        }).toList(),
-                      ),
-                    );
-                  } else if (snapshot.hasError) {
-                    print(snapshot.error);
-                    return Center(
-                      child: Text("${snapshot.error}"),
-                    );
-                  } else {
-                    return const Center(
-                      child: CircularProgressIndicator(),
-                    );
-                  }
-                }
-                )
+          content: Padding(
+            padding: const EdgeInsets.only(right: 10.0, bottom: 10.0),
+            child: DropdownButtonFormField(
+              isExpanded: true,
+              onChanged: (value) {
+                parishOpts = value;
+                setState(() {});
+              },
+              value: parishOpts,
+              items: parishes.map((parish) {
+                return DropdownMenuItem(value: parish, child: Text(parish));
+              }).toList(),
+            ),
+          ),
         ),
       ];
 }
