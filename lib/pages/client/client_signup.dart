@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:email_validator/email_validator.dart';
+import 'package:tradeswap_front/models/client_model.dart';
 import 'package:tradeswap_front/models/parish_model.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:tradeswap_front/services/client_api.dart';
 
 class ClientSignup extends StatefulWidget {
   const ClientSignup({super.key});
@@ -14,13 +16,16 @@ class ClientSignup extends StatefulWidget {
 class _ClientSignupState extends State<ClientSignup> {
   int currentStep = 0;
   final formKey = GlobalKey<FormState>();
-
+  final ClientService clientAPI = ClientService();
   final firstName = TextEditingController();
   final lastName = TextEditingController();
   final email = TextEditingController();
+  final username = TextEditingController();
   final password = TextEditingController();
   final confirmPass = TextEditingController();
   final cellNum = TextEditingController();
+  final parishID = TextEditingController();
+  final roleID = TextEditingController();
   // final profilePic = TextEditingController();
   // final bio = TextEditingController();
   // final idUpload = TextEditingController();
@@ -135,8 +140,18 @@ class _ClientSignupState extends State<ClientSignup> {
                   setState(() {
                     currentStep = currentStep;
                   });
-                } else if (isLastStep) {
-                  print("Form Submitted!");
+                } else if (isLastStep && formKey.currentState!.validate()) {
+                  formKey.currentState!.save();
+                  clientAPI.createClient(Client.withoutID(
+                      first_name: firstName.text,
+                      last_name: lastName.text,
+                      email: email.text,
+                      username: email.text,
+                      password: password.text,
+                      parishID: parishSelect,
+                      roleID: "636e855c7addb6c8cd013c46"
+                    )
+                  );
                 } else {
                   setState(() => currentStep += 1);
                 }
@@ -358,11 +373,10 @@ class _ClientSignupState extends State<ClientSignup> {
 
         //FORM STEP 2
         Step(
-          state: currentStep > 2 ? StepState.complete : StepState.indexed,
-          isActive: currentStep >= 2,
-          title: const Text("Location"),
-          content:
-          FutureBuilder<List<Parish>>(
+            state: currentStep > 2 ? StepState.complete : StepState.indexed,
+            isActive: currentStep >= 2,
+            title: const Text("Location"),
+            content: FutureBuilder<List<Parish>>(
                 future: parishList,
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
@@ -381,7 +395,7 @@ class _ClientSignupState extends State<ClientSignup> {
                             child: Text(par.parish_name),
                             onTap: () {
                               setState(() {
-                                parishSelect = par.parish_name;
+                                parishSelect = par.id;
                                 print(parishSelect);
                               });
                             },
@@ -399,8 +413,6 @@ class _ClientSignupState extends State<ClientSignup> {
                       child: CircularProgressIndicator(),
                     );
                   }
-                }
-                )
-        ),
+                })),
       ];
 }
