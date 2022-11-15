@@ -301,6 +301,7 @@ class _TradesmanSignupState extends State<TradesmanSignup> {
                 ),
               ),
 
+
               //EMAIL FORM FIELD
               Padding(
                 padding: const EdgeInsets.only(top: 10.0, right: 10.0),
