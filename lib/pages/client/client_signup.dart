@@ -368,7 +368,7 @@ class _ClientSignupState extends State<ClientSignup> {
                   if (snapshot.hasData) {
                     return Padding(
                       padding: const EdgeInsets.only(right: 10.0, bottom: 10.0),
-                      child: DropdownButton<String>(
+                      child: DropdownButtonFormField<String>(
                         hint: const Text('Select a parish'),
                         isExpanded: true,
                         onChanged: (value) {
