@@ -1,7 +1,7 @@
 // ignore_for_file: non_constant_identifier_names
 
 class Parish {
-  int id;
+  String id;
   String parish_name = '';
 
   Parish({required this.id, required this.parish_name});
@@ -9,7 +9,7 @@ class Parish {
   factory Parish.fromJson(Map<String, dynamic> json) {
     print(json);
     return Parish(
-      id: json['id'],
+      id: json['_id'],
       parish_name: json['parish_name'],
     );
   }
