@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
+
 // basically in the flutter app you
 // create a state variable to store the value when it comes
 // based on that value you make decisions to navigate  etc.
@@ -21,12 +22,15 @@ class NetworkHandler {
   //this is how it is consumed in an api call
 
   static Future<String> post(String endpoint, var body) async {
+    print(body);
     var response = await client
         .post(buildUrl(segment: endpoint), body: jsonEncode(body), headers: {
       "Content-type": "application/json",
     });
+    print(response.statusCode);
     return response.body;
   }
+
   //an example of how to use this is here.
   //final response = await NetworkHandler.get(endpoint: '/departments');
   //this would be a get request for the departments end point of the api
@@ -41,11 +45,10 @@ class NetworkHandler {
   }
 
   static Future<String> patch(String endpoint, var changes) async {
-    var response = await client.patch(buildUrl(segment: endpoint),
-        body: changes,
-        headers: {
-          "Content-type": "application/json",
-        });
+    var response = await client
+        .patch(buildUrl(segment: endpoint), body: changes, headers: {
+      "Content-type": "application/json",
+    });
 
     return response.body;
   }
@@ -57,6 +60,7 @@ class NetworkHandler {
     print(response.body);
     return response.body;
   }
+
   //this is basically adding the uri... this is what every api call would use
   static buildUrl({String segment = "", queryParams = const {}}) {
     Uri uri = Uri(
