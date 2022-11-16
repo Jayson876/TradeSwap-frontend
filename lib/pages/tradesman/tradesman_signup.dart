@@ -3,8 +3,8 @@ import 'package:email_validator/email_validator.dart';
 import 'package:http/http.dart' as http;
 import 'package:tradeswap_front/models/category_model.dart';
 import 'dart:convert';
-
 import 'package:tradeswap_front/models/parish_model.dart';
+import 'package:tradeswap_front/services/networkHandler.dart';
 
 class TradesmanSignup extends StatefulWidget {
   const TradesmanSignup({super.key});
@@ -19,14 +19,24 @@ class _TradesmanSignupState extends State<TradesmanSignup> {
 
   final firstName = TextEditingController();
   final lastName = TextEditingController();
-  final email = TextEditingController();
-  final password = TextEditingController();
-  final confirmPass = TextEditingController();
-  final cellNum = TextEditingController();
-  final profilePic = TextEditingController();
-  final bio = TextEditingController();
-  final idUpload = TextEditingController();
-  final hrlyRate = TextEditingController();
+  final emailVal = TextEditingController();
+  final passwordVal = TextEditingController();
+  // final confirmPass = TextEditingController();
+  // final cellNum = TextEditingController();
+  // final profilePic = TextEditingController();
+  // final bio = TextEditingController();
+  // final idUpload = TextEditingController();
+  // final hrlyRate = TextEditingController();
+
+  String first_name = '';
+  String last_name = '';
+  String email = '';
+  String username = '';
+  String password = '';
+  String parishID = '';
+  String categoryID = '';
+  String roleID = '';
+  String error = '';
 
   String? skillOpts = 'Select a Skill';
 
@@ -74,7 +84,7 @@ class _TradesmanSignupState extends State<TradesmanSignup> {
   String categorySelect = '63557069df6e9c413ef6bf79';
   late Future<List<Category>> catList;
 
-  Future<List<Parish>> getParishes() async {
+   Future<List<Parish>> getParishes() async {
     var resp = await http
         .get(Uri.parse('https://trade-swap-backend.vercel.app/api/v1/parish'));
     if (resp.statusCode == 200) {
@@ -100,6 +110,41 @@ class _TradesmanSignupState extends State<TradesmanSignup> {
     } else {
       return [];
     }
+  }
+
+  Future<bool> register(
+      String first_name,
+      String last_name,
+      String email,
+      String username,
+      String password1,
+      String parishID,
+      String categoryID,
+      String roleID,
+    ) async {
+    try {
+      Map registerStatus = jsonDecode(await NetworkHandler.post("/users", {
+        "first_name": first_name,
+        "last_name": last_name,
+        "email": email,
+        "username": email,
+        "password": password,
+        "parishID": parishSelect,
+        "categoryID": categorySelect,
+        "roleID": '636e862044bed1477f01219e'
+      }));
+
+      if (registerStatus["status"] == 201) {
+        print("User created");
+        print(registerStatus);
+        return true;
+      } else {
+        print(registerStatus["error"]);
+      }
+    } catch (err) {
+      print(err);
+    }
+    return false;
   }
 
   @override
@@ -164,7 +209,8 @@ class _TradesmanSignupState extends State<TradesmanSignup> {
                 if (isDetailValid) {}
 
                 if (isLastStep) {
-                  print("Form Submitted!");
+                  register(first_name, last_name, email, parishID, roleID,
+                      username, password, categoryID);
                 } else {
                   setState(() => currentStep += 1);
                 }
@@ -235,12 +281,14 @@ class _TradesmanSignupState extends State<TradesmanSignup> {
 
   bool isDetailComplete() {
     if (currentStep == 0) {
-      if (firstName.text.isEmpty ||
-          lastName.text.isEmpty ||
-          email.text.isEmpty ||
-          password.text.isEmpty ||
-          confirmPass.text.isEmpty ||
-          cellNum.text.isEmpty) {
+      if (first_name.isEmpty ||
+          last_name.isEmpty ||
+          email.isEmpty ||
+          username.isEmpty ||
+          password.isEmpty ||
+          parishID.isEmpty ||
+          categoryID.isEmpty ||
+          roleID.isEmpty) {
         return false;
       } else {
         return true;
@@ -272,17 +320,24 @@ class _TradesmanSignupState extends State<TradesmanSignup> {
                     Expanded(
                         child: Padding(
                       padding: const EdgeInsets.only(right: 10.0),
-                      child: TextFormField(
+                      child: TextField(
                         keyboardType: TextInputType.name,
-                        decoration:
-                            const InputDecoration(labelText: 'First Name'),
+                        decoration: const InputDecoration(
+                            labelText: 'First Name',
+                            errorText: 'First name required'),
                         controller: firstName,
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Enter your first name.';
-                          }
-                          return null;
+                        onChanged: (value) {
+                          setState(() {
+                            first_name = value;
+                          });
                         },
+
+                        // validator: (value) {
+                        //   if (value == null || value.isEmpty) {
+                        //     return 'Enter your first name.';
+                        //   }
+                        //   return null;
+                        // },
                       ),
                     )),
 
@@ -290,158 +345,204 @@ class _TradesmanSignupState extends State<TradesmanSignup> {
                     Expanded(
                         child: Padding(
                       padding: const EdgeInsets.only(left: 10.0),
-                      child: TextFormField(
+                      child: TextField(
                         keyboardType: TextInputType.name,
-                        decoration:
-                            const InputDecoration(labelText: 'Last Name'),
+                        decoration: const InputDecoration(
+                            labelText: 'Last Name',
+                            errorText: 'Last name required'),
                         controller: lastName,
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Enter your last name.';
-                          } else {
-                            return null;
-                          }
+                         onChanged: (value) {
+                          setState(() {
+                            last_name = value;
+                          });
                         },
+                        // validator: (value) {
+                        //   if (value == null || value.isEmpty) {
+                        //     return 'Enter your last name.';
+                        //   } else {
+                        //     return null;
+                        //   }
+                        // },
                       ),
                     )),
                   ],
                 ),
               ),
 
-
               //EMAIL FORM FIELD
               Padding(
                 padding: const EdgeInsets.only(top: 10.0, right: 10.0),
-                child: TextFormField(
+                child: TextField(
                   keyboardType: TextInputType.emailAddress,
-                  decoration: const InputDecoration(labelText: 'Email'),
-                  controller: email,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Your email address is required.';
-                    } else if (value != null &&
-                        !EmailValidator.validate(value)) {
-                      return 'Invalid email address.';
-                    } else {
-                      return null;
-                    }
-                  },
+                  decoration: const InputDecoration(
+                      labelText: 'Email', errorText: 'Email address required'),
+                  controller: emailVal,
+                   onChanged: (value) {
+                          setState(() {
+                            email = value;
+                          });
+                        },
+
+                  // validator: (value) {
+                  //   if (value == null || value.isEmpty) {
+                  //     return 'Your email address is required.';
+                  //   } else if (value != null &&
+                  //       !EmailValidator.validate(value)) {
+                  //     return 'Invalid email address.';
+                  //   } else {
+                  //     return null;
+                  //   }
+                  // },
                 ),
               ),
 
               //PASSWORD FORM FIELD
               Padding(
                 padding: const EdgeInsets.only(top: 10.0, right: 10.0),
-                child: TextFormField(
+                child: TextField(
                   keyboardType: TextInputType.visiblePassword,
-                  decoration: const InputDecoration(labelText: 'Password'),
-                  controller: password,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Password is required.';
-                    } else {
-                      return null;
-                    }
-                  },
+                  decoration: const InputDecoration(
+                      labelText: 'Password', errorText: 'password required'),
+                  controller: passwordVal,
+                   onChanged: (value) {
+                          setState(() {
+                            password = value;
+                          });
+                        },
+
+                  // validator: (value) {
+                  //   if (value == null || value.isEmpty) {
+                  //     return 'Your email address is required.';
+                  //   } else if (value != null &&
+                  //       !EmailValidator.validate(value)) {
+                  //     return 'Invalid email address.';
+                  //   } else {
+                  //     return null;
+                  //   }
+                  // },
                 ),
               ),
+              // Padding(
+              //   padding: const EdgeInsets.only(top: 10.0, right: 10.0),
+              //   child: TextField(
+              //     controller: passwordVal,
+              //     keyboardType: TextInputType.visiblePassword,
+              //     decoration: const InputDecoration(
+              //       labelText: 'Password',
+              //       errorText: 'Password required',
+              //     ),
+              //     // controller: password,
+              //     onChanged: (value) {
+              //       setState(() {
+              //         password1 = value;
+              //       });
+              //     },
+              //     // validator: (value) {
+              //     //   if (value == null || value.isEmpty) {
+              //     //     return 'Password is required.';
+              //     //   } else {
+              //     //     return null;
+              //     //   }
+              //     // },
+              //   ),
+              // ),
 
               //CONFIRM PASSWORD FORM FIELD
-              Padding(
-                padding: const EdgeInsets.only(top: 10.0, right: 10.0),
-                child: TextFormField(
-                  keyboardType: TextInputType.visiblePassword,
-                  decoration:
-                      const InputDecoration(labelText: 'Confirm Password'),
-                  controller: confirmPass,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Passwords dont match.';
-                    } else {
-                      return null;
-                    }
-                  },
-                ),
-              ),
+              // Padding(
+              //   padding: const EdgeInsets.only(top: 10.0, right: 10.0),
+              //   child: TextField(
+              //     keyboardType: TextInputType.visiblePassword,
+              //     decoration:
+              //         const InputDecoration(labelText: 'Confirm Password'),
+              //     controller: confirmPass,
+              //     validator: (value) {
+              //       if (value == null || value.isEmpty) {
+              //         return 'Passwords dont match.';
+              //       } else {
+              //         return null;
+              //       }
+              //     },
+              //   ),
+              // ),
 
               //CELL NUMBER FORM FIELD
-              Padding(
-                padding: const EdgeInsets.only(top: 10.0, right: 10.0),
-                child: TextFormField(
-                  keyboardType: TextInputType.phone,
-                  decoration: const InputDecoration(labelText: 'Cell Number'),
-                  controller: cellNum,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Your mobile number is required.';
-                    } else {
-                      return null;
-                    }
-                  },
-                ),
-              ),
+              // Padding(
+              //   padding: const EdgeInsets.only(top: 10.0, right: 10.0),
+              //   child: TextField(
+              //     keyboardType: TextInputType.phone,
+              //     decoration: const InputDecoration(labelText: 'Cell Number'),
+              //     controller: cellNum,
+              //     validator: (value) {
+              //       if (value == null || value.isEmpty) {
+              //         return 'Your mobile number is required.';
+              //       } else {
+              //         return null;
+              //       }
+              //     },
+              //   ),
+              // ),
             ],
           ),
         ),
 
         //FORM STEP 2
-        Step(
-          state: currentStep > 1 ? StepState.complete : StepState.indexed,
-          isActive: currentStep >= 1,
-          title: const Text("Profile"),
-          content: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              //PROFILE PICTURE FIELD
-              Padding(
-                padding: const EdgeInsets.only(bottom: 10.0, right: 10.0),
-                child: TextFormField(
-                  keyboardType: TextInputType.url,
-                  decoration: const InputDecoration(labelText: 'Profile Photo'),
-                  controller: profilePic,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Upload a photo of yourself.';
-                    } else {
-                      return null;
-                    }
-                  },
-                ),
-              ),
+        // Step(
+        //   state: currentStep > 1 ? StepState.complete : StepState.indexed,
+        //   isActive: currentStep >= 1,
+        //   title: const Text("Profile"),
+        //   content: Column(
+        //     crossAxisAlignment: CrossAxisAlignment.start,
+        //     children: [
+        //       PROFILE PICTURE FIELD
+        //       Padding(
+        //         padding: const EdgeInsets.only(bottom: 10.0, right: 10.0),
+        //         child: TextField(
+        //           keyboardType: TextInputType.url,
+        //           decoration: const InputDecoration(labelText: 'Profile Photo'),
+        //           controller: profilePic,
+        //           validator: (value) {
+        //             if (value == null || value.isEmpty) {
+        //               return 'Upload a photo of yourself.';
+        //             } else {
+        //               return null;
+        //             }
+        //           },
+        //         ),
+        //       ),
 
-              // //CIRCLE PROFILE PHOTO
-              // CircleAvatar(
-              //   radius: 80.0,
-              //   backgroundColor: Color.fromARGB(255, 255, 214, 10),
-              // ),
+        //       //CIRCLE PROFILE PHOTO
+        //       CircleAvatar(
+        //         radius: 80.0,
+        //         backgroundColor: Color.fromARGB(255, 255, 214, 10),
+        //       ),
 
-              //ABOUT TRADESMAN
-              const Padding(
-                padding: EdgeInsets.only(top: 10.0, bottom: 8.0),
-                child: Text("Tell us about yourself"),
-              ),
+        //       //ABOUT TRADESMAN
+        //       const Padding(
+        //         padding: EdgeInsets.only(top: 10.0, bottom: 8.0),
+        //         child: Text("Tell us about yourself"),
+        //       ),
 
-              //ABOUT TRADESMAN TEXT AREA
-              Padding(
-                padding: const EdgeInsets.only(bottom: 10.0, right: 10.0),
-                child: TextFormField(
-                  // minLines: 1,
-                  maxLines: 3,
-                  decoration: const InputDecoration(
-                    // labelText: 'Tell us about yourself',
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(5))),
-                  ),
-                  controller: bio,
-                ),
-              ),
-            ],
-          ),
-        ),
+        //       //ABOUT TRADESMAN TEXT AREA
+        //       Padding(
+        //         padding: const EdgeInsets.only(bottom: 10.0, right: 10.0),
+        //         child: TextField(
+        //           // minLines: 1,
+        //           maxLines: 3,
+        //           decoration: const InputDecoration(
+        //             // labelText: 'Tell us about yourself',
+        //             border: OutlineInputBorder(
+        //                 borderRadius: BorderRadius.all(Radius.circular(5))),
+        //           ),
+        //           // controller: bio,
+        //         ),
+        //       ),
+        //     ],
+        //   ),
+        // ),
 
         //FORM STEP 3
         Step(
-            state: currentStep > 2 ? StepState.complete : StepState.indexed,
+            state: currentStep > 1 ? StepState.complete : StepState.indexed,
             isActive: currentStep >= 2,
             title: const Text("Skills"),
             content: FutureBuilder<List<Category>>(
@@ -474,56 +575,56 @@ class _TradesmanSignupState extends State<TradesmanSignup> {
                         ),
                       ),
 
-                      //HOURLY RATE AND NEGOTIABLE OPTION CHECKBOX ROW
+                      // HOURLY RATE AND NEGOTIABLE OPTION CHECKBOX ROW
                       Padding(
                         padding: const EdgeInsets.only(right: 10.0),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
                             //RATE FORM FIELD
-                            Expanded(
-                                child: Padding(
-                              padding: const EdgeInsets.only(right: 10.0),
-                              child: TextFormField(
-                                keyboardType: TextInputType.number,
-                                decoration:
-                                    const InputDecoration(labelText: 'Rate'),
-                                controller: hrlyRate,
-                                validator: (value) {
-                                  if (value == null || value.isEmpty) {
-                                    return 'Enter your hourly rate.';
-                                  }
-                                  return null;
-                                },
-                              ),
-                            )),
+                            // Expanded(
+                            //     child: Padding(
+                            //   padding: const EdgeInsets.only(right: 10.0),
+                            //   child: TextField(
+                            //     keyboardType: TextInputType.number,
+                            //     decoration:
+                            //         const InputDecoration(labelText: 'Rate'),
+                            // controller: hrlyRate,
+                            // validator: (value) {
+                            //   if (value == null || value.isEmpty) {
+                            //     return 'Enter your hourly rate.';
+                            //   }
+                            //   return null;
+                            // },
+                            //   ),
+                            // )),
 
                             //CHECKBOX AND LABEL ROW
                             Row(
                               children: <Widget>[
                                 //CHECKBOX
-                                Checkbox(
-                                    shape: const RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(3))),
-                                    value: checkBoxValue,
-                                    activeColor: const Color(0xFF040F44),
-                                    checkColor: Colors.white,
-                                    onChanged: (bool? value) {
-                                      setState(() {
-                                        checkBoxValue = value;
-                                      });
-                                    }),
+                                // Checkbox(
+                                //     shape: const RoundedRectangleBorder(
+                                //         borderRadius: BorderRadius.all(
+                                //             Radius.circular(3))),
+                                //     value: checkBoxValue,
+                                //     activeColor: const Color(0xFF040F44),
+                                //     checkColor: Colors.white,
+                                //     onChanged: (bool? value) {
+                                //       setState(() {
+                                //         checkBoxValue = value;
+                                //       });
+                                //     }),
 
                                 //LABEL
-                                const Text(
-                                  'Neg.?',
-                                  style: TextStyle(
-                                    color: Color(0xFF040F44),
-                                    fontWeight: FontWeight.w600,
-                                    fontSize: 14,
-                                  ),
-                                ),
+                                // const Text(
+                                //   'Neg.?',
+                                //   style: TextStyle(
+                                //     color: Color(0xFF040F44),
+                                //     fontWeight: FontWeight.w600,
+                                //     fontSize: 14,
+                                //   ),
+                                // ),
                               ],
                             ),
                           ],
@@ -581,50 +682,49 @@ class _TradesmanSignupState extends State<TradesmanSignup> {
                       child: CircularProgressIndicator(),
                     );
                   }
-                }
-                )),
+                })),
 
         //FORM STEP 5
-        Step(
-          isActive: currentStep >= 4,
-          title: const Text("Verification"),
-          content: Column(
-            children: [
-              //ID UPLOAD FIELD
-              Padding(
-                padding: const EdgeInsets.only(bottom: 10.0, right: 10.0),
-                child: TextFormField(
-                  keyboardType: TextInputType.url,
-                  decoration: const InputDecoration(labelText: 'ID Upload'),
-                  controller: idUpload,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Upload an image of your ID.';
-                    } else {
-                      return null;
-                    }
-                  },
-                ),
-              ),
+        // Step(
+        //   isActive: currentStep >= 4,
+        //   title: const Text("Verification"),
+        //   content: Column(
+        //     children: [
+        //       //ID UPLOAD FIELD
+        //       Padding(
+        //         padding: const EdgeInsets.only(bottom: 10.0, right: 10.0),
+        //         child: TextField(
+        //           keyboardType: TextInputType.url,
+        //           decoration: const InputDecoration(labelText: 'ID Upload'),
+        //           controller: idUpload,
+        //           validator: (value) {
+        //             if (value == null || value.isEmpty) {
+        //               return 'Upload an image of your ID.';
+        //             } else {
+        //               return null;
+        //             }
+        //           },
+        //         ),
+        //       ),
 
-              //SELFIE UPLOAD FIELD
-              Padding(
-                padding: const EdgeInsets.only(bottom: 10.0, right: 10.0),
-                child: TextFormField(
-                  keyboardType: TextInputType.url,
-                  decoration: const InputDecoration(labelText: 'Selfie Upload'),
-                  controller: idUpload,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Upload an image of yourself.';
-                    } else {
-                      return null;
-                    }
-                  },
-                ),
-              ),
-            ],
-          ),
-        ),
+        //       //SELFIE UPLOAD FIELD
+        //       Padding(
+        //         padding: const EdgeInsets.only(bottom: 10.0, right: 10.0),
+        //         child: TextField(
+        //           keyboardType: TextInputType.url,
+        //           decoration: const InputDecoration(labelText: 'Selfie Upload'),
+        //           controller: idUpload,
+        //           validator: (value) {
+        //             if (value == null || value.isEmpty) {
+        //               return 'Upload an image of yourself.';
+        //             } else {
+        //               return null;
+        //             }
+        //           },
+        //         ),
+        //       ),
+        //     ],
+        //   ),
+        // ),
       ];
 }
