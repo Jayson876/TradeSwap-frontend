@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tradeswap_front/pages/login.dart';
 import './signup.dart';
 
 class LandingScreen extends StatefulWidget {
@@ -109,7 +110,7 @@ class _LandingScreenState extends State<LandingScreen> {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => const SignUpScreen()));
+                          builder: (context) => const LoginPage()));
                 },
                 style: TextButton.styleFrom(
                   padding:
