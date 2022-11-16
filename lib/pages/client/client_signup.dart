@@ -5,6 +5,7 @@ import 'package:tradeswap_front/models/parish_model.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:tradeswap_front/services/client_api.dart';
+import 'package:tradeswap_front/services/networkHandler.dart';
 
 class ClientSignup extends StatefulWidget {
   const ClientSignup({super.key});
@@ -19,13 +20,21 @@ class _ClientSignupState extends State<ClientSignup> {
   final ClientService clientAPI = ClientService();
   final firstName = TextEditingController();
   final lastName = TextEditingController();
-  final email = TextEditingController();
-  final username = TextEditingController();
-  final password = TextEditingController();
+  final emailVal = TextEditingController();
+  final usernameVal = TextEditingController();
+  final passwordVal = TextEditingController();
   final confirmPass = TextEditingController();
   final cellNum = TextEditingController();
-  final parishID = TextEditingController();
-  final roleID = TextEditingController();
+  // final parishID = TextEditingController();
+  // final roleID = TextEditingController();
+  String first_name = '';
+  String last_name = '';
+  String email = '';
+  String username = '';
+  String password = '';
+  String parishID = '';
+  String roleID = '';
+  String error = '';
   // final profilePic = TextEditingController();
   // final bio = TextEditingController();
   // final idUpload = TextEditingController();
@@ -68,6 +77,32 @@ class _ClientSignupState extends State<ClientSignup> {
     } else {
       return [];
     }
+  }
+
+  Future<bool> register(String first_name, String last_name, String email,
+      String username, String parishID, String roleID, String password) async {
+    try {
+      Map registerStatus = jsonDecode(await NetworkHandler.post("/users", {
+        "first_name": first_name,
+        "last_name": last_name,
+        "email": email,
+        "username": email,
+        "password": password,
+        "parishID": parishSelect,
+        "roleID": '636e855c7addb6c8cd013c46'
+      }));
+
+      if (registerStatus["status"] == 201) {
+        print("User created");
+        print(registerStatus);
+        return true;
+      } else {
+        print(registerStatus["error"]);
+      }
+    } catch (err) {
+      print(err);
+    }
+    return false;
   }
 
   @override
@@ -140,18 +175,9 @@ class _ClientSignupState extends State<ClientSignup> {
                   setState(() {
                     currentStep = currentStep;
                   });
-                } else if (isLastStep && formKey.currentState!.validate()) {
-                  formKey.currentState!.save();
-                  clientAPI.createClient(Client.withoutID(
-                      first_name: firstName.text,
-                      last_name: lastName.text,
-                      email: email.text,
-                      username: email.text,
-                      password: password.text,
-                      parishID: parishSelect,
-                      roleID: "636e855c7addb6c8cd013c46"
-                    )
-                  );
+                } else if (isLastStep) {
+                  register(first_name, last_name, email, parishID, roleID,
+                      username, password);
                 } else {
                   setState(() => currentStep += 1);
                 }
@@ -223,12 +249,14 @@ class _ClientSignupState extends State<ClientSignup> {
 
   bool isDetailComplete() {
     if (currentStep == 0) {
-      if (firstName.text.isEmpty ||
-          lastName.text.isEmpty ||
-          email.text.isEmpty ||
-          password.text.isEmpty ||
-          confirmPass.text.isEmpty ||
-          cellNum.text.isEmpty) {
+      if (first_name.isEmpty ||
+              last_name.isEmpty ||
+              email.isEmpty ||
+              username.isEmpty ||
+              password.isEmpty ||
+              parishID.isEmpty ||
+              roleID.isEmpty
+          ) {
         return false;
       } else {
         return true;
@@ -260,17 +288,27 @@ class _ClientSignupState extends State<ClientSignup> {
                     Expanded(
                         child: Padding(
                       padding: const EdgeInsets.only(right: 10.0),
-                      child: TextFormField(
+                      child: TextField(
                         keyboardType: TextInputType.name,
-                        decoration:
-                            const InputDecoration(labelText: 'First Name'),
                         controller: firstName,
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Enter your first name.';
-                          }
-                          return null;
+                        decoration:
+                            const InputDecoration(
+                              labelText: 'First Name',
+                              errorText: 'First name required',
+                            ),
+                        // controller: firstName,
+                        onChanged: (value) {
+                          setState(() {
+                            first_name = value;
+                          });
                         },
+
+                        // validator: (value) {
+                        //   if (value == null || value.isEmpty) {
+                        //     return 'Enter your first name.';
+                        //   }
+                        //   return null;
+                        // },
                       ),
                     )),
 
@@ -278,18 +316,27 @@ class _ClientSignupState extends State<ClientSignup> {
                     Expanded(
                         child: Padding(
                       padding: const EdgeInsets.only(left: 10.0),
-                      child: TextFormField(
+                      child: TextField(
+                        controller: lastName,
                         keyboardType: TextInputType.name,
                         decoration:
-                            const InputDecoration(labelText: 'Last Name'),
-                        controller: lastName,
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Enter your last name.';
-                          } else {
-                            return null;
-                          }
+                            const InputDecoration(
+                              labelText: 'Last Name',
+                              errorText: 'Last name required',
+                            ),
+                        // controller: lastName,
+                        onChanged: (value) {
+                          setState(() {
+                            last_name = value;
+                          });
                         },
+                        // validator: (value) {
+                        //   if (value == null || value.isEmpty) {
+                        //     return 'Enter your last name.';
+                        //   } else {
+                        //     return null;
+                        //   }
+                        // },
                       ),
                     )),
                   ],
@@ -299,74 +346,94 @@ class _ClientSignupState extends State<ClientSignup> {
               //EMAIL FORM FIELD
               Padding(
                 padding: const EdgeInsets.only(top: 10.0, right: 10.0),
-                child: TextFormField(
+                child: TextField(
+                  controller: emailVal,
                   keyboardType: TextInputType.emailAddress,
-                  decoration: const InputDecoration(labelText: 'Email'),
-                  controller: email,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Your email address is required.';
-                    } else if (value != null &&
-                        !EmailValidator.validate(value)) {
-                      return 'Invalid email address.';
-                    } else {
-                      return null;
-                    }
+                  decoration: const InputDecoration(
+                    labelText: 'Email',
+                    errorText: 'Email required',
+                  ),
+                  // controller: email,
+                  onChanged: (value) {
+                    setState(() {
+                      email = value;
+                    });
                   },
+                  // validator: (value) {
+                  //   if (value == null || value.isEmpty) {
+                  //     return 'Your email address is required.';
+                  //   } else if (value != null &&
+                  //       !EmailValidator.validate(value)) {
+                  //     return 'Invalid email address.';
+                  //   } else {
+                  //     return null;
+                  //   }
+                  // },
                 ),
               ),
 
               //PASSWORD FORM FIELD
               Padding(
                 padding: const EdgeInsets.only(top: 10.0, right: 10.0),
-                child: TextFormField(
+                child: TextField(
+                  controller: passwordVal,
                   keyboardType: TextInputType.visiblePassword,
-                  decoration: const InputDecoration(labelText: 'Password'),
-                  controller: password,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Password is required.';
-                    } else {
-                      return null;
-                    }
+                  decoration: const InputDecoration(
+                    labelText: 'Password',
+                    errorText: 'Password required',
+                  ),
+                  // controller: password,
+                  onChanged: (value) {
+                    setState(() {
+                      password = value;
+                    });
                   },
+                  // validator: (value) {
+                  //   if (value == null || value.isEmpty) {
+                  //     return 'Password is required.';
+                  //   } else {
+                  //     return null;
+                  //   }
+                  // },
                 ),
               ),
 
               //CONFIRM PASSWORD FORM FIELD
-              Padding(
-                padding: const EdgeInsets.only(top: 10.0, right: 10.0),
-                child: TextFormField(
-                  keyboardType: TextInputType.visiblePassword,
-                  decoration:
-                      const InputDecoration(labelText: 'Confirm Password'),
-                  controller: confirmPass,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Passwords dont match.';
-                    } else {
-                      return null;
-                    }
-                  },
-                ),
-              ),
+              // Padding(
+              //   padding: const EdgeInsets.only(top: 10.0, right: 10.0),
+              //   child: TextField(
+              //     keyboardType: TextInputType.visiblePassword,
+              //     decoration:
+              //         const InputDecoration(labelText: 'Confirm Password'),
+              //     // controller: confirmPass,
+              //     onChanged: (value) {},
+              //     // validator: (value) {
+              //     //   if (value == null || value.isEmpty) {
+              //     //     return 'Passwords dont match.';
+              //     //   } else {
+              //     //     return null;
+              //     //   }
+              //     // },
+              //   ),
+              // ),
 
               //CELL NUMBER FORM FIELD
-              Padding(
-                padding: const EdgeInsets.only(top: 10.0, right: 10.0),
-                child: TextFormField(
-                  keyboardType: TextInputType.phone,
-                  decoration: const InputDecoration(labelText: 'Cell Number'),
-                  controller: cellNum,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Your mobile number is required.';
-                    } else {
-                      return null;
-                    }
-                  },
-                ),
-              ),
+              // Padding(
+              //   padding: const EdgeInsets.only(top: 10.0, right: 10.0),
+              //   child: TextField(
+              //     keyboardType: TextInputType.phone,
+              //     decoration: const InputDecoration(labelText: 'Cell Number'),
+              //     // controller: cellNum,
+              //     onChanged: (value) {},
+              //     // validator: (value) {
+              //     //   if (value == null || value.isEmpty) {
+              //     //     return 'Your mobile number is required.';
+              //     //   } else {
+              //     //     return null;
+              //     //   }
+              //     // },
+              //   ),
+              // ),
             ],
           ),
         ),
