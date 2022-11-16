@@ -107,7 +107,7 @@ class LoginPage extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Row(
-                            children: const [
+                            children: [
                               Text(
                                 'dont have an account?',
                                 style: TextStyle(
@@ -116,11 +116,12 @@ class LoginPage extends StatelessWidget {
                               SizedBox(
                                 width: 3,
                               ),
-                              Text(
-                                'Sign up',
-                                style:
-                                    TextStyle(color: Colors.blue, fontSize: 20),
-                              )
+                              TextButton(
+                                  onPressed: () {},
+                                  child: const Text(
+                                    'Sign up',
+                                    style: TextStyle(color: Colors.blue, fontSize: 20),
+                                  ))
                             ],
                           )
                         ],
