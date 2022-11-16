@@ -6,6 +6,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:tradeswap_front/services/client_api.dart';
 import 'package:tradeswap_front/services/networkHandler.dart';
+import 'package:tradeswap_front/pages/home/homepage.dart';
 
 class ClientSignup extends StatefulWidget {
   const ClientSignup({super.key});
@@ -93,6 +94,7 @@ class _ClientSignupState extends State<ClientSignup> {
       }));
 
       if (registerStatus["status"] == 201) {
+        signupCompleted(context);
         print("User created");
         print(registerStatus);
         return true;
@@ -250,13 +252,12 @@ class _ClientSignupState extends State<ClientSignup> {
   bool isDetailComplete() {
     if (currentStep == 0) {
       if (first_name.isEmpty ||
-              last_name.isEmpty ||
-              email.isEmpty ||
-              username.isEmpty ||
-              password.isEmpty ||
-              parishID.isEmpty ||
-              roleID.isEmpty
-          ) {
+          last_name.isEmpty ||
+          email.isEmpty ||
+          username.isEmpty ||
+          password.isEmpty ||
+          parishID.isEmpty ||
+          roleID.isEmpty) {
         return false;
       } else {
         return true;
@@ -291,11 +292,10 @@ class _ClientSignupState extends State<ClientSignup> {
                       child: TextField(
                         keyboardType: TextInputType.name,
                         controller: firstName,
-                        decoration:
-                            const InputDecoration(
-                              labelText: 'First Name',
-                              errorText: 'First name required',
-                            ),
+                        decoration: const InputDecoration(
+                          labelText: 'First Name',
+                          errorText: 'First name required',
+                        ),
                         // controller: firstName,
                         onChanged: (value) {
                           setState(() {
@@ -319,11 +319,10 @@ class _ClientSignupState extends State<ClientSignup> {
                       child: TextField(
                         controller: lastName,
                         keyboardType: TextInputType.name,
-                        decoration:
-                            const InputDecoration(
-                              labelText: 'Last Name',
-                              errorText: 'Last name required',
-                            ),
+                        decoration: const InputDecoration(
+                          labelText: 'Last Name',
+                          errorText: 'Last name required',
+                        ),
                         // controller: lastName,
                         onChanged: (value) {
                           setState(() {
@@ -482,4 +481,33 @@ class _ClientSignupState extends State<ClientSignup> {
                   }
                 })),
       ];
+
+  Future<void> signupCompleted(BuildContext context) async {
+    return showDialog<void>(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text(''),
+            content: SingleChildScrollView(
+              child: ListBody(
+                children: const <Widget>[
+                  Center(child: Text('Registration Complete')),
+                ],
+              ),
+            ),
+            actions: <Widget>[
+              TextButton(
+                child: const Text('OK'),
+                onPressed: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const HomePage()));
+                },
+              )
+            ],
+          );
+        });
+  }
 }

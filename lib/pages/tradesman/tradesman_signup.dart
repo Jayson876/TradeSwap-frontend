@@ -5,6 +5,7 @@ import 'package:tradeswap_front/models/category_model.dart';
 import 'dart:convert';
 import 'package:tradeswap_front/models/parish_model.dart';
 import 'package:tradeswap_front/services/networkHandler.dart';
+import 'package:tradeswap_front/pages/home/homepage.dart';
 
 class TradesmanSignup extends StatefulWidget {
   const TradesmanSignup({super.key});
@@ -84,7 +85,7 @@ class _TradesmanSignupState extends State<TradesmanSignup> {
   String categorySelect = '63557069df6e9c413ef6bf79';
   late Future<List<Category>> catList;
 
-   Future<List<Parish>> getParishes() async {
+  Future<List<Parish>> getParishes() async {
     var resp = await http
         .get(Uri.parse('https://trade-swap-backend.vercel.app/api/v1/parish'));
     if (resp.statusCode == 200) {
@@ -113,15 +114,15 @@ class _TradesmanSignupState extends State<TradesmanSignup> {
   }
 
   Future<bool> register(
-      String first_name,
-      String last_name,
-      String email,
-      String username,
-      String password1,
-      String parishID,
-      String categoryID,
-      String roleID,
-    ) async {
+    String first_name,
+    String last_name,
+    String email,
+    String username,
+    String password1,
+    String parishID,
+    String categoryID,
+    String roleID,
+  ) async {
     try {
       Map registerStatus = jsonDecode(await NetworkHandler.post("/users", {
         "first_name": first_name,
@@ -135,6 +136,7 @@ class _TradesmanSignupState extends State<TradesmanSignup> {
       }));
 
       if (registerStatus["status"] == 201) {
+        signupCompleted(context);
         print("User created");
         print(registerStatus);
         return true;
@@ -351,7 +353,7 @@ class _TradesmanSignupState extends State<TradesmanSignup> {
                             labelText: 'Last Name',
                             errorText: 'Last name required'),
                         controller: lastName,
-                         onChanged: (value) {
+                        onChanged: (value) {
                           setState(() {
                             last_name = value;
                           });
@@ -377,11 +379,11 @@ class _TradesmanSignupState extends State<TradesmanSignup> {
                   decoration: const InputDecoration(
                       labelText: 'Email', errorText: 'Email address required'),
                   controller: emailVal,
-                   onChanged: (value) {
-                          setState(() {
-                            email = value;
-                          });
-                        },
+                  onChanged: (value) {
+                    setState(() {
+                      email = value;
+                    });
+                  },
 
                   // validator: (value) {
                   //   if (value == null || value.isEmpty) {
@@ -404,11 +406,11 @@ class _TradesmanSignupState extends State<TradesmanSignup> {
                   decoration: const InputDecoration(
                       labelText: 'Password', errorText: 'password required'),
                   controller: passwordVal,
-                   onChanged: (value) {
-                          setState(() {
-                            password = value;
-                          });
-                        },
+                  onChanged: (value) {
+                    setState(() {
+                      password = value;
+                    });
+                  },
 
                   // validator: (value) {
                   //   if (value == null || value.isEmpty) {
@@ -727,4 +729,33 @@ class _TradesmanSignupState extends State<TradesmanSignup> {
         //   ),
         // ),
       ];
+
+  Future<void> signupCompleted(BuildContext context) async {
+    return showDialog<void>(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text(''),
+            content: SingleChildScrollView(
+              child: ListBody(
+                children: const <Widget>[
+                  Center(child: Text('Registration Complete')),
+                ],
+              ),
+            ),
+            actions: <Widget>[
+              TextButton(
+                child: const Text('OK'),
+                onPressed: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const HomePage()));
+                },
+              )
+            ],
+          );
+        });
+  }
 }
