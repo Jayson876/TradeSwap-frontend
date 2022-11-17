@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:tradeswap_front/pages/signup.dart';
+import 'package:tradeswap_front/pages/startup.dart';
 
 import '../widgets/checkbox.dart';
 
@@ -117,7 +119,12 @@ class LoginPage extends StatelessWidget {
                                 width: 3,
                               ),
                               TextButton(
-                                  onPressed: () {},
+                                  onPressed: () {
+                                    Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => const SignUpScreen()));
+                                  },
                                   child: const Text(
                                     'Sign up',
                                     style: TextStyle(color: Colors.blue, fontSize: 20),
