@@ -1,6 +1,6 @@
 import 'dart:convert';
-
 import 'package:http/http.dart' as http;
+import 'package:tradeswap_front/services/token_store.dart';
 
 // basically in the flutter app you
 // create a state variable to store the value when it comes
@@ -9,6 +9,18 @@ import 'package:http/http.dart' as http;
 class NetworkHandler {
   static String token = "";
   static final client = http.Client();
+
+  NetworkHandler() {
+    getToken();
+  }
+
+  static Future<String> getToken() async {
+    var authToken = (await SecureStore.getToken("token"));
+    if (authToken == null) {
+      return Future.value(" ");
+    }
+    return authToken;
+  }
 
   //an example of how to use this is here.
   //Map registerStatus = jsonDecode(await NetworkHandler.post("/registrants", {
